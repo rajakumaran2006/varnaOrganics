@@ -1,10 +1,17 @@
 import React from 'react';
-import { Search, ShoppingCart, PlayCircle, ChevronDown, Check, Star, ArrowDownCircle, ArrowUpCircle, MapPin, Mail, Phone, Facebook, Twitter, Youtube, Network, Layers, Box } from 'lucide-react';
+import { ShoppingCart, ChevronDown, Check, Star, ArrowDownCircle, ArrowUpCircle, Mail, Phone, Network, Layers, Box, Sparkles, Wind } from 'lucide-react';
 
 export default function App() {
   const [view, setView] = React.useState<'home' | 'products' | 'consultation'>('home');
 
   const scrollToProduct = (id: string) => {
+    if (id === 'other') {
+      setView('consultation');
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 100);
+      return;
+    }
     setView('products');
     setTimeout(() => {
       const element = document.getElementById(id);
@@ -22,18 +29,20 @@ export default function App() {
       
       {view === 'home' ? (
         <>
-          <Hero />
+          <Hero setView={setView} />
           <AboutSection />
           <PopularProducts onMoreDetails={scrollToProduct} />
-          <WhyChooseUs />
+          <WhyChooseUs setView={setView} />
           <FeedbackSection />
           <FAQSection />
+          <Footer setView={setView} />
         </>
       ) : view === 'products' ? (
         <>
           <div className="h-[calc(100vh-80px)] overflow-y-auto snap-y snap-mandatory scroll-smooth hide-scrollbar bg-[#f9f8f4]">
             <ProductShowcase 
               id="lib-balm"
+              productName="Beetroot Lip Balm"
               title="Everything Has Beauty, But Not Everyone Sees It"
               description="Our Beetroot Lip Balm is formulated with 100% natural extracts, providing deep hydration and a subtle natural tint that lasts all day long."
               image="/p1.png"
@@ -41,12 +50,13 @@ export default function App() {
               rightContent={{
                 heading: "Our team of skin specialists works directly with state-of-the-art technology to create products that provide optimal care.",
                 secondaryTitle: "Lip Care",
-                secondaryText: "See for yourself how our products are the future of natural cosmetics."
+                secondaryText: "Beetroot is naturally rich in antioxidants that help brighten and nourish your lips while providing a healthy, natural glow."
               }}
             />
 
             <ProductShowcase 
               id="foot-cream"
+              productName="Softening Foot Cream"
               title="Experience Ultimate Softness with Every Step"
               description="Our specialized Foot Cream combines intensive moisture with natural healing properties to soothe tired feet and repair dry, cracked skin."
               image="/p2.png"
@@ -54,12 +64,13 @@ export default function App() {
               rightContent={{
                 heading: "Crafted by dermatologists, our formulas prioritize deep penetration and long-lasting protection for all skin types.",
                 secondaryTitle: "Intensive Repair Formula",
-                secondaryText: "Advanced natural hydration for your feet, designed for daily comfort and visible results."
+                secondaryText: "Natural salicylic acid from willow bark helps gently exfoliate and soften tough calluses for visible results."
               }}
             />
 
             <ProductShowcase 
               id="hair-oil"
+              productName="Herbal Hair Oil"
               title="Strengthen Your Roots with Natural Potency"
               description="Our specialized Hair Oil is a blend of traditional herbal extracts designed to nourish the scalp, reduce hair fall, and promote healthy growth."
               image="/p3.png"
@@ -67,22 +78,25 @@ export default function App() {
               rightContent={{
                 heading: "Formulated based on individual consultation, our hair oil targets root strength and scalp health for comprehensive care.",
                 secondaryTitle: "Root Revival Formula",
-                secondaryText: "See the difference of traditional herbal knowledge combined with modern quality practices."
+                secondaryText: "Brahmi and Amla extracts work together to strengthen hair follicles from within, promoting healthy growth."
               }}
             />
+            
+            {/* Footer inside products scrollable area */}
+            <div className="snap-start">
+              <Footer setView={setView} />
+            </div>
           </div>
         </>
       ) : view === 'consultation' ? (
-        <ConsultationView />
+        <ConsultationView setView={setView} />
       ) : null}
-
-      <Footer setView={setView} />
     </div>
   );
 }
 
 
-function WhyChooseUs() {
+function WhyChooseUs({ setView }: { setView: (view: 'home' | 'products' | 'consultation') => void }) {
   return (
     <section className="w-full bg-[#fdfdfd] pt-16 pb-0 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-8 relative z-10 h-full">
@@ -91,9 +105,9 @@ function WhyChooseUs() {
         <div className="flex items-center gap-3 mb-12 animate-fade-in translate-x-2">
           <div className="flex -space-x-2">
             {[
-              "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=100&auto=format&fit=crop",
-              "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=100&auto=format&fit=crop",
-              "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=100&auto=format&fit=crop"
+              "public/people.png",
+              "public/people2.png",
+              "public/people3.png"
             ].map((src, i) => (
               <img 
                 key={i} 
@@ -120,10 +134,13 @@ function WhyChooseUs() {
               <span className="text-stone-400">potential</span>
             </h2>
             <p className="text-stone-500 text-lg max-w-sm font-medium leading-relaxed opacity-80">
-              Our AI scans your face and shows what can be improved
+              Our experts understand your face and provide personalized care tailored to your unique needs.
             </p>
-            <button className="bg-[#ff808b] text-white px-10 py-5 rounded-2xl font-bold tracking-wide hover:bg-[#ff6b78] hover:scale-105 transition-all shadow-xl shadow-rose-400/20 active:scale-95">
-              Analyze Skin
+            <button 
+              onClick={() => setView('consultation')}
+              className="bg-[#ff808b] text-white px-10 py-5 rounded-2xl font-bold tracking-wide hover:bg-[#ff6b78] hover:scale-105 transition-all shadow-xl shadow-rose-400/20 active:scale-95"
+            >
+              Talk to our consultant
             </button>
           </div>
 
@@ -152,9 +169,9 @@ function WhyChooseUs() {
                 <Network className="w-12 h-12 stroke-[1.25]" />
               </div>
               <div>
-                <h3 className="text-4xl font-bold text-[#333333] mb-1">95%</h3>
+                <h3 className="text-4xl font-bold text-[#333333] mb-1">100%</h3>
                 <p className="text-[11px] font-bold text-stone-400 uppercase tracking-[0.15em] leading-tight">
-                  accurate skin<br />analysis
+                  Expert led<br />consultation
                 </p>
               </div>
             </div>
@@ -164,9 +181,9 @@ function WhyChooseUs() {
                 <Layers className="w-12 h-12 stroke-[1.25]" />
               </div>
               <div>
-                <h3 className="text-4xl font-bold text-[#333333] mb-1">30+</h3>
+                <h3 className="text-4xl font-bold text-[#333333] mb-1">25+</h3>
                 <p className="text-[11px] font-bold text-stone-400 uppercase tracking-[0.15em] leading-tight">
-                  skin concerns<br />analyzed
+                  Herbal<br />formulations
                 </p>
               </div>
             </div>
@@ -176,14 +193,13 @@ function WhyChooseUs() {
                 <Box className="w-12 h-12 stroke-[1.25]" />
               </div>
               <div>
-                <h3 className="text-4xl font-bold text-[#333333] mb-1">7-day</h3>
+                <h3 className="text-4xl font-bold text-[#333333] mb-1">Pure</h3>
                 <p className="text-[11px] font-bold text-stone-400 uppercase tracking-[0.15em] leading-tight">
-                  personalized<br />routine
+                  Natural<br />Ingredients
                 </p>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </section>
@@ -195,31 +211,28 @@ function Header({ setView }: { setView: (view: 'home' | 'products' | 'consultati
     <header className="w-full z-100 bg-white border-b border-stone-100 sticky top-0">
       <div className="max-w-7xl mx-auto px-8 py-6 flex items-center justify-between w-full">
         {/* Logo */}
-        <div className="flex items-center gap-2 cursor-pointer group" onClick={() => setView('home')}>
-          <div className="w-11 h-11 rounded-full border-2 border-[#ff808b] flex items-center justify-center text-[#ff808b] bg-white group-hover:bg-[#ff808b] group-hover:text-white transition-all">
-             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-6 h-6">
-               <path d="M12 21a9 9 0 1 1 0-18c4.97 0 9 4.03 9 9" />
-               <path d="M12 12c-2.5 0-4.5-2-4.5-4.5S9.5 3 12 3s4.5 2 4.5 4.5" />
-             </svg>
+        <div className="flex items-center gap-4 cursor-pointer group" onClick={() => setView('home')}>
+          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#ff808b]/20 flex items-center justify-center bg-white group-hover:border-[#ff808b] transition-all">
+             <img src="/logo.png" alt="Varna Naturals Logo" className="w-14 h-14 object-contain" />
           </div>
           <div className="flex flex-col">
-            <span className="font-serif text-xl font-bold leading-none text-stone-800">Varna Naturals</span>
-            <span className="text-[10px] text-stone-500 tracking-wider font-medium">Natural Care for Skin, Hair & Wellness</span>
+            <span className="font-serif text-2xl font-bold leading-none text-stone-800 uppercase">Varna Naturals</span>
+            <span className="text-[11px] text-stone-500 tracking-wider font-medium">Natural Care for Skin, Hair & Wellness</span>
           </div>
         </div>
 
-        {/* Nav */}
-        <nav className="hidden md:flex items-center gap-10 text-sm font-bold text-stone-600 tracking-wide uppercase">
-          <button onClick={() => setView('products')} className="hover:text-rose-400 transition-colors uppercase cursor-pointer">PRODUCTS</button>
-          <button onClick={() => setView('consultation')} className="hover:text-rose-400 transition-colors uppercase cursor-pointer">Consultation</button>
+        {/* Nav - Vertical alignment fix */}
+        <nav className="hidden md:flex items-center gap-10 text-sm font-bold text-stone-600 tracking-wide uppercase h-full">
+          <button onClick={() => setView('products')} className="hover:text-rose-400 transition-colors uppercase cursor-pointer py-2">PRODUCTS</button>
+          <button onClick={() => setView('consultation')} className="hover:text-rose-400 transition-colors uppercase cursor-pointer py-2">Consultation</button>
         </nav>
 
-        {/* Actions */}
-        <div className="flex items-center gap-4">
-          <button className="w-11 h-11 bg-[#333333] text-white flex items-center justify-center rounded-full hover:bg-stone-800 transition-all shadow-md active:scale-95">
-            <Search className="w-5 h-5" />
-          </button>
-          <button className="bg-[#ff808b] hover:bg-[#ff6b78] text-white px-8 py-3 rounded-full font-bold tracking-wide transition-all shadow-lg shadow-rose-400/20 active:scale-95 text-xs">
+        {/* Actions - Vertical alignment fix */}
+        <div className="flex items-center gap-4 h-full">
+          <button 
+            onClick={() => { setView('consultation'); setTimeout(() => document.getElementById('consultation-form')?.scrollIntoView({ behavior: 'smooth' }), 100); }}
+            className="bg-[#ff808b] hover:bg-[#ff6b78] text-white px-8 py-3.5 rounded-full font-bold tracking-wide transition-all shadow-lg shadow-rose-400/20 active:scale-95 text-xs h-fit"
+          >
             GET STARTED
           </button>
         </div>
@@ -228,7 +241,7 @@ function Header({ setView }: { setView: (view: 'home' | 'products' | 'consultati
   );
 }
 
-function Hero() {
+function Hero({ setView }: { setView: (view: 'home' | 'products' | 'consultation') => void }) {
   return (
     <div className="w-full bg-[#f7f7f7] relative overflow-hidden">
       {/* Decorative Assets - Restricted to Hero Section */}
@@ -261,12 +274,11 @@ function Hero() {
             </p>
           </div>
           <div className="flex items-center gap-8">
-            <button className="bg-[#ff808b] hover:bg-[#ff6b78] text-white rounded-full px-12 py-5 font-bold tracking-wide transition-all shadow-xl shadow-rose-400/25 hover:scale-105 active:scale-95">
-              EXPLORE MORE
-            </button>
-            <button className="flex items-center gap-3 font-bold text-stone-700 hover:text-[#ff808b] transition-colors group tracking-wide">
-              <PlayCircle className="w-12 h-12 text-stone-700 group-hover:text-[#ff808b] transition-colors" />
-              OUR VIDEO
+            <button 
+              onClick={() => setView('products')}
+              className="bg-[#ff808b] hover:bg-[#ff6b78] text-white rounded-full px-12 py-5 font-bold tracking-wide transition-all shadow-xl shadow-rose-400/25 hover:scale-105 active:scale-95"
+            >
+              EXPLORE PRODUCTS
             </button>
           </div>
         </div>
@@ -312,7 +324,7 @@ function AboutSection() {
         <div className="flex-1 relative w-full flex justify-center lg:justify-start">
           {/* Pink Badge */}
           <div className="absolute -top-4 -left-4 lg:-left-8 lg:-top-4 bg-[#ff808b] text-white rounded-[2.5rem] p-8 shadow-2xl z-20 flex flex-col items-center justify-center transform -rotate-6 w-36 h-36">
-            <span className="text-5xl font-bold leading-none">25+</span>
+            <span className="text-5xl font-bold leading-none">7+</span>
             <span className="text-sm font-bold mt-2 tracking-widest uppercase opacity-90">product</span>
           </div>
           
@@ -338,9 +350,6 @@ function AboutSection() {
             <p className="font-bold text-stone-600">
               Varna Naturals is a wellness-focused brand dedicated to providing safe, natural, and consultation-based healthcare and personal care solutions.
             </p>
-            <p className="font-medium">
-              Our product range—including natural lip balm, foot cream, hair oil, body lotion, and other healthcare formulations—is developed based on real patient requirements and clinical observations. Each product is designed to support healing, nourishment, and long-term wellness without harmful chemicals.
-            </p>
           </div>
           
           <div className="flex items-center justify-between gap-8 pt-10 border-t border-stone-100 relative">
@@ -363,30 +372,28 @@ function PopularProducts({ onMoreDetails }: { onMoreDetails: (id: string) => voi
   const products = [
     {
       name: 'LIB BALM',
-      oldPrice: 'RS 25.00',
-      newPrice: 'RS 20.00',
       image: '/p1.png',
       id: 'lib-balm'
     },
     {
       name: 'FOOT CREAM',
-      oldPrice: 'RS 20.00',
-      newPrice: 'RS 12.00',
       image: '/p2.png',
       id: 'foot-cream'
     },
     {
       name: 'HAIR OIL',
-      oldPrice: 'RS 30.00',
-      newPrice: 'RS 22.00',
       image: '/p3.png',
       id: 'hair-oil'
+    },
+    {
+      name: 'OTHER',
+      image: '/logo.png',
+      id: 'other'
     }
   ];
 
   return (
     <section className="w-full relative py-32 bg-white overflow-hidden">
-      {/* Decorative Leaves for this section - Full Corner Placement */}
       <img 
         src="/leaf.png" 
         alt="Leaf Decorative" 
@@ -395,7 +402,7 @@ function PopularProducts({ onMoreDetails }: { onMoreDetails: (id: string) => voi
       <img 
         src="/leaf.png" 
         alt="Leaf Decorative" 
-        className="absolute -bottom-18 -right-22 w-64 lg:w-[480px] pointer-events-none z-0 object-contain rotate-[180deg] drop-shadow-sm opacity-90" 
+        className="absolute -bottom-18 -right-22 w-64 lg:w-[480px] pointer-events-none z-0 object-contain rotate-180 drop-shadow-sm opacity-90" 
       />
 
       <div className="max-w-7xl mx-auto px-8 relative z-10">
@@ -411,15 +418,11 @@ function PopularProducts({ onMoreDetails }: { onMoreDetails: (id: string) => voi
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {products.map((product, idx) => (
-            <div key={idx} className="bg-[#fcfcff] rounded-[2.5rem] p-10 flex flex-col items-center relative shadow-[0_20px_50px_-15px_rgba(0,0,0,0.03)] border-2 border-black group hover:-translate-y-2 transition-all duration-500 ease-out">
-              <div className="absolute top-6 right-6 bg-[#ff808b] text-white text-[10px] font-bold px-3 py-1.5 rounded-full z-20 shadow-lg shadow-rose-400/20 tracking-wider">
-                SALE!
-              </div>
+            <div key={idx} className="bg-[#fcfcff] rounded-[2.5rem] p-10 flex flex-col items-center relative shadow-[0_20px_50px_-15px_rgba(0,0,0,0.03)] border border-stone-100 group hover:-translate-y-2 transition-all duration-500 ease-out">
               
               <div className="relative w-full aspect-square mb-10 overflow-hidden flex items-center justify-center">
-                {/* Decorative background glow per card */}
                 <div className="absolute inset-2 bg-white rounded-full scale-90 group-hover:scale-100 transition-transform duration-700 shadow-inner translate-y-2"></div>
                 <img 
                   src={product.image} 
@@ -430,17 +433,13 @@ function PopularProducts({ onMoreDetails }: { onMoreDetails: (id: string) => voi
 
               <div className="text-center w-full space-y-2">
                 <h3 className="text-2xl font-bold text-[#333333] tracking-tight">{product.name}</h3>
-                <div className="flex items-center justify-center gap-3 text-sm">
-                  <span className="text-stone-300 line-through font-medium">{product.oldPrice}</span>
-                  <span className="font-bold text-[#ff808b] text-base">{product.newPrice}</span>
-                </div>
               </div>
 
               <button 
                 onClick={() => onMoreDetails(product.id)}
                 className="mt-10 bg-[#333333] text-white rounded-xl w-full py-4 font-bold tracking-widest text-[10px] uppercase transition-all hover:bg-[#ff808b] shadow-lg shadow-stone-200 active:scale-[0.98]"
               >
-                More Details
+                {product.id === 'other' ? 'Seek Consultation' : 'More Details'}
               </button>
             </div>
           ))}
@@ -460,16 +459,16 @@ function FAQSection() {
 
   const faqs = [
     {
-      question: "Nulla Diam Dui, Placerat At Mauris Vel",
-      answer: "Aenean porttitor, risus vitae semper ullamcorper, tellus felis sollicitudin mauris, eu mollis arcu sapien vel turpis. Suspendisse maximus, quam et lacinia consequat, sapien turpis accumsan tellus, non efficitur sem dui sit amet sem. Phasellus lobortis lacus non sapien efficitur.",
+      question: "How soon can I see results with Varna products?",
+      answer: "Consistency is key. Most of our customers observe visible improvements in skin texture and hair health within 3 to 4 weeks of regular use, as our formulations work deep into the cells.",
     },
     {
-      question: "Curabitur Pharetra Placerat Dui",
-      answer: "Duis vitae fermentum urna. Maecenas venenatis feugiat arcu et sodales. Integer non ex vel ante vulputate porttitor praesent aliquet elit sit amet enim cursus, pharetra ornare nisl lacinia.",
+      question: "Are your products safe for children?",
+      answer: "Yes, our products are made from 100% natural and herbal ingredients without any harmful chemicals, making them safe for people of all ages including children.",
     },
     {
-      question: "Donec Ultrices Tincidunt Enim Et Varius",
-      answer: "Pellentesque sed magna posuere. Integer non ex vel ante vulputate porttitor praesent aliquet elit sit amet enim cursus, pharetra ornare nisl lacinia.",
+      question: "How do I book a professional consultation?",
+      answer: "You can easily book a consultation through our website's Consultation page or by reaching out to us directly via WhatsApp. Our experts will then guide you based on your specific requirements.",
     }
   ];
 
@@ -553,24 +552,24 @@ function FAQSection() {
 function FeedbackSection() {
   const testimonials = [
     {
-      name: "Sophia Anderson",
-      role: "Skincare Enthusiast",
-      image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop",
-      text: "The Beetroot Lip Balm is a game changer! My lips have never felt this hydrated and the natural tint is just perfect for daily wear.",
+      name: "Abirami Sethuraman",
+      role: "Skin Care Enthusiast",
+      image: "public/people.png",
+      text: "The Beetroot Lip Balm is amazing! It keeps my lips hydrated throughout the day even in Chennai's heat. Highly recommend!",
       stars: 5
     },
     {
-      name: "Marcus Chen",
+      name: "Karthikeyan P.",
       role: "Athlete",
-      image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=200&auto=format&fit=crop",
-      text: "As someone who is always on their feet, the Foot Cream has been a lifesaver. It absorbs quickly and really helps with dry skin.",
+      image: "public/people2.png",
+      text: "The Hair Oil and Foot Cream have become essential parts of my routine. I can really feel the difference of pure herbal ingredients.",
       stars: 5
     },
     {
-      name: "Elena Rodriguez",
-      role: "Product Designer",
-      image: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=200&auto=format&fit=crop",
-      text: "I love the minimalist approach and the pure ingredients. The Face Gel feels so light and refreshing on my skin. Highly recommended!",
+      name: "Meenakshi Sundaram",
+      role: "Graphic Designer",
+      image: "public/people3.png",
+      text: "Varna Naturals has finally given me a natural alternative that actually works. The consultation was very helpful in choosing the right products.",
       stars: 5
     }
   ];
@@ -622,14 +621,9 @@ function Footer({ setView }: { setView: (view: 'home' | 'products' | 'consultati
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Column 1: Brand */}
           <div className="flex flex-col">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-full border-2 border-[#ff808b] flex items-center justify-center text-[#ff808b] bg-transparent">
-                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-8 h-8">
-                   <path d="M12 21a9 9 0 1 1 0-18c4.97 0 9 4.03 9 9" />
-                   <path d="M12 12c-2.5 0-4.5-2-4.5-4.5S9.5 3 12 3s4.5 2 4.5 4.5" />
-                   <path d="M12 12c2.5 0 4.5-2 4.5-4.5S14.5 3 12 3s-4.5 2-4.5 4.5" />
-                   <path d="M12 12v9" />
-                 </svg>
+            <div className="flex items-center gap-3 mb-6 cursor-pointer" onClick={() => { setView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+              <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-[#ff808b] flex items-center justify-center bg-white">
+                 <img src="/logo.png" alt="Varna Naturals Logo" className="w-12 h-12 object-contain" />
               </div>
               <div className="flex flex-col">
                 <span className="font-serif text-3xl text-white leading-none font-bold">Varna Naturals</span>
@@ -643,9 +637,9 @@ function Footer({ setView }: { setView: (view: 'home' | 'products' | 'consultati
 
           {/* Column 2: Quick Link */}
           <div className="flex flex-col">
-            <h4 className="text-2xl font-bold mb-6">Quick Link</h4>
+            <h4 className="text-2xl font-bold mb-6 tracking-tight">Quick Link</h4>
             <ul className="space-y-4">
-              <li onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex items-center gap-2 text-stone-300 hover:text-[#ff808b] cursor-pointer transition-colors">
+              <li onClick={() => { setView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="flex items-center gap-2 text-stone-300 hover:text-[#ff808b] cursor-pointer transition-colors">
                 <Check size={16} className="text-[#ff808b]" />
                 <span>About</span>
               </li>
@@ -660,27 +654,12 @@ function Footer({ setView }: { setView: (view: 'home' | 'products' | 'consultati
             </ul>
           </div>
 
-          {/* Column 3: Information */}
-          <div className="flex flex-col">
-            <h4 className="text-2xl font-bold mb-6">Information</h4>
-            <ul className="space-y-4">
-              {['Terms & Conditions', 'Disclaimer', 'Support', 'FAQ'].map((item) => (
-                <li key={item} className="flex items-center gap-2 text-stone-300 hover:text-[#ff808b] cursor-pointer transition-colors">
-                  <Check size={16} className="text-[#ff808b]" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <div className="hidden lg:block lg:col-span-1"></div>
 
           {/* Column 4: Get In Touch */}
           <div className="flex flex-col">
-            <h4 className="text-2xl font-bold mb-6">Get In Touch</h4>
+            <h4 className="text-2xl font-bold mb-6 tracking-tight">Get In Touch</h4>
             <ul className="space-y-4 mb-8">
-              <li className="flex items-start gap-3 text-stone-300">
-                <MapPin size={20} className="text-[#ff808b] shrink-0 mt-1" />
-                <span>99 Roving St., Pku</span>
-              </li>
               <li className="flex items-center gap-3 text-stone-300">
                 <Phone size={20} className="text-[#ff808b] shrink-0" />
                 <span>9345033110 (WhatsApp)</span>
@@ -690,31 +669,11 @@ function Footer({ setView }: { setView: (view: 'home' | 'products' | 'consultati
                 <span>dr._abinayasri (Instagram)</span>
               </li>
             </ul>
-            
-            <h5 className="font-bold text-lg mb-4">Social media :</h5>
-            <div className="flex gap-3">
-              <a href="#" className="w-10 h-10 rounded-full bg-[#ff808b] flex items-center justify-center text-white hover:bg-[#ff657c] transition-colors">
-                <Facebook size={20} fill="currentColor" stroke="none" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-[#ff808b] flex items-center justify-center text-white hover:bg-[#ff657c] transition-colors">
-                <Twitter size={20} fill="currentColor" stroke="none" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-[#ff808b] flex items-center justify-center text-white hover:bg-[#ff657c] transition-colors">
-                <Youtube size={20} />
-              </a>
-            </div>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 border-t border-stone-600 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-stone-400">
-          <p>©Copyright 2026 Varna Naturals. All Rights Reserved.</p>
-          <div className="flex items-center gap-4">
-            <a href="#" className="hover:text-[#ff7b8f] transition-colors">Privacy Policy</a>
-            <span className="w-px h-4 bg-stone-600"></span>
-            <a href="#" className="hover:text-[#ff7b8f] transition-colors">Terms of use</a>
-          </div>
-        </div>
+        {/* Bottom Bar - Empty to remove text */}
+        <div className="pt-8 border-t border-stone-800"></div>
       </div>
     </footer>
   );
@@ -722,6 +681,7 @@ function Footer({ setView }: { setView: (view: 'home' | 'products' | 'consultati
 
 interface ProductShowcaseProps {
   id: string;
+  productName: string;
   title: string;
   description: string;
   image: string;
@@ -733,7 +693,7 @@ interface ProductShowcaseProps {
   };
 }
 
-function ProductShowcase({ id, title, description, image, categories, rightContent }: ProductShowcaseProps) {
+function ProductShowcase({ id, productName, title, description, image, categories, rightContent }: ProductShowcaseProps) {
   return (
     <section id={id} className="w-full h-full snap-start bg-[#f9f8f4] py-4 lg:py-6 relative overflow-hidden border-b border-stone-200/50 flex items-center">
       {/* Background Grid Lines - More subtle */}
@@ -746,11 +706,6 @@ function ProductShowcase({ id, title, description, image, categories, rightConte
         
         {/* Left Column - More compact */}
         <div className="lg:col-span-4 flex flex-col justify-center gap-6 lg:gap-8">
-          <div className="flex items-center gap-3">
-            <span className="bg-black text-white text-[8px] font-bold px-3 py-1.5 rounded-full tracking-widest uppercase">
-              Limited Offer
-            </span>
-          </div>
 
           <div className="space-y-4 lg:space-y-6">
             <h2 className="text-stone-900 text-3xl lg:text-5xl xl:text-6xl font-serif font-bold leading-tight tracking-tight">
@@ -759,18 +714,24 @@ function ProductShowcase({ id, title, description, image, categories, rightConte
             <p className="text-stone-500 text-sm lg:text-base font-medium leading-relaxed max-w-sm">
               {description}
             </p>
-            <button className="bg-[#1a1a1a] text-white px-10 py-4 rounded-full font-bold tracking-wide hover:bg-black transition-all shadow-xl shadow-stone-200 active:scale-95 text-xs">
+            <button 
+              onClick={() => {
+                const message = `Hello Varna Naturals, I would like to order ${productName}.`;
+                window.open(`https://wa.me/9345033110?text=${encodeURIComponent(message)}`, '_blank');
+              }}
+              className="bg-[#1a1a1a] text-white px-10 py-4 rounded-full font-bold tracking-wide hover:bg-black transition-all shadow-xl shadow-stone-200 active:scale-95 text-xs"
+            >
               Order now
             </button>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-3 pb-8 lg:pb-0">
             <p className="text-[9px] font-bold text-stone-400 uppercase tracking-[0.2em]">
               Category
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5 max-w-[280px]">
               {categories.map((cat) => (
-                <span key={cat} className="bg-white border border-stone-100 text-stone-600 text-[10px] font-bold px-4 py-2 rounded-full hover:bg-stone-50 transition-colors shadow-sm">
+                <span key={cat} className="bg-white border border-stone-100 text-stone-600 text-[9px] font-bold px-3 py-1.5 rounded-full hover:bg-stone-50 transition-colors shadow-sm whitespace-nowrap">
                   {cat}
                 </span>
               ))}
@@ -781,10 +742,6 @@ function ProductShowcase({ id, title, description, image, categories, rightConte
         {/* Center Column - Constrained height */}
         <div className="lg:col-span-4 relative flex justify-center items-center h-full min-h-[300px] lg:min-h-auto">
            <div className="relative w-full max-h-[50vh] lg:max-h-[60vh] flex items-center justify-center">
-              {/* Watch Promo Circle - Smaller */}
-              <div className="absolute top-[10%] right-[0%] lg:right-[-5%] w-16 h-16 lg:w-20 lg:h-20 bg-[#e58a5f] rounded-full flex items-center justify-center text-white text-center text-[9px] lg:text-[10px] font-medium leading-tight p-3 shadow-xl z-20 cursor-pointer hover:scale-110 transition-transform">
-                Watch <br /> promo
-              </div>
 
               <img 
                 src={image} 
@@ -803,12 +760,12 @@ function ProductShowcase({ id, title, description, image, categories, rightConte
             
             <div className="flex items-center gap-3">
               <div className="flex -space-x-1.5">
-                {[1, 2, 3].map((i) => (
+                {["/doctor1.png", "/doctor2.png", "/doctor3.png"].map((src, i) => (
                   <img 
                     key={i} 
-                    src={`https://images.unsplash.com/photo-${1544005313 + i * 1000}-94ddf0286df2?auto=format&fit=crop&q=80&w=100`} 
+                    src={src} 
                     className="w-8 h-8 rounded-full border-2 border-white shadow-sm object-cover" 
-                    alt="User" 
+                    alt="Expert" 
                   />
                 ))}
               </div>
@@ -820,21 +777,15 @@ function ProductShowcase({ id, title, description, image, categories, rightConte
 
           <div className="relative p-6 pt-12 lg:p-8 lg:pt-16 bg-white rounded-3xl border border-stone-50 shadow-[0_15px_35px_rgba(0,0,0,0.02)] overflow-visible">
              <div className="space-y-3 relative z-10">
-                <div className="w-24 h-24 lg:w-32 lg:h-32 flex items-center justify-center absolute -top-16 lg:-top-20 -right-4 lg:right-0">
-                   <img src={image} className="w-full h-full object-contain drop-shadow-lg opacity-90 scale-110" alt="Sub Product" />
+                <div className="w-24 h-24 lg:w-28 lg:h-28 flex items-center justify-center absolute -top-12 lg:-top-16 -right-6 lg:-right-8">
+                   <img src={image} className="w-full h-full object-contain drop-shadow-lg opacity-90 scale-125" alt="Sub Product" />
                 </div>
-                <h4 className="text-xl lg:text-2xl font-bold text-stone-800 tracking-tight pr-12">
+                <h4 className="text-xl lg:text-2xl font-bold text-stone-800 tracking-tight pr-16 lg:pr-20">
                    {rightContent.secondaryTitle}
                 </h4>
-                <p className="text-stone-400 text-xs lg:text-sm font-medium leading-relaxed pr-8">
+                <p className="text-stone-400 text-xs lg:text-sm font-medium leading-relaxed pr-10 lg:pr-12">
                    {rightContent.secondaryText}
                 </p>
-                <button className="flex items-center gap-2 group text-stone-800 font-bold text-[10px] lg:text-xs pt-4 uppercase tracking-widest">
-                   <span>Explore</span>
-                   <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-full bg-[#ff808b] flex items-center justify-center text-white group-hover:scale-110 transition-transform shadow-lg shadow-rose-200">
-                      <ChevronDown className="w-3 h-3 lg:w-4 lg:h-4 -rotate-135" />
-                   </div>
-                </button>
              </div>
           </div>
         </div>
@@ -844,63 +795,138 @@ function ProductShowcase({ id, title, description, image, categories, rightConte
   );
 }
 
-function ConsultationView() {
+function ConsultationView({ setView }: { setView: (view: 'home' | 'products' | 'consultation') => void }) {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const name = formData.get('name');
+    const product = formData.get('product');
+    const userMessage = formData.get('message');
+    
+    let message = `Hello Varna Naturals, I am ${name}. I am interested in ${product}.`;
+    if (userMessage) {
+      message += ` Additional details: ${userMessage}`;
+    }
+    message += ` I would like a consultation.`;
+    
+    const whatsappUrl = `https://wa.me/9345033110?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   return (
-    <div className="h-[calc(100vh-80px)] bg-[#fdfdfd] flex flex-col lg:flex-row overflow-hidden">
-      {/* Skin Consultation Section */}
-      <div className="flex-1 relative group cursor-pointer overflow-hidden flex flex-col items-center justify-center p-12 text-center border-r border-stone-100">
-        <div className="absolute inset-0 bg-rose-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-        
-        {/* Decorative background image - blurred */}
-        <div className="absolute inset-0 z-0 opacity-5 grayscale group-hover:scale-110 transition-transform duration-1000">
-          <img src="https://images.unsplash.com/photo-1552693673-1bf958298935?q=80&w=800&auto=format&fit=crop" className="w-full h-full object-cover" alt="Skin Care Background" />
+    <div className="h-[calc(100vh-80px)] overflow-y-auto snap-y snap-mandatory scroll-smooth hide-scrollbar transition-all bg-[#fdfdfd]">
+      
+      {/* Hero Sections Wrapper */}
+      <div className="h-full flex flex-col lg:flex-row snap-start">
+        {/* Skin Consultation Section */}
+        <div className="flex-1 relative group cursor-pointer overflow-hidden flex flex-col items-center justify-center p-12 text-center border-r border-stone-100">
+          <div className="absolute inset-0 bg-rose-50/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+          
+          {/* Decorative background image - blurred -> Clear on hover */}
+          <div className="absolute inset-0 z-0 transition-all duration-1000 grayscale group-hover:grayscale-0 opacity-5 group-hover:opacity-20 group-hover:scale-110">
+            <img src="https://images.unsplash.com/photo-1552693673-1bf958298935?q=80&w=800&auto=format&fit=crop" className="w-full h-full object-cover" alt="Skin Care Background" />
+          </div>
+
+          <div className="relative z-10 space-y-6">
+            <div className="w-24 h-24 bg-white rounded-full mx-auto shadow-2xl shadow-rose-200/50 overflow-hidden mb-8 border-4 border-white group-hover:scale-110 transition-transform duration-500">
+               <img src="/doctor1.png" className="w-full h-full object-cover" alt="Doctor 1" />
+            </div>
+            <h2 className="text-4xl lg:text-5xl font-serif font-bold text-[#333333]">Skin Consultation</h2>
+            <p className="text-stone-500 max-w-sm mx-auto font-medium leading-relaxed">
+              Personalized analysis of your skin concerns including acne, aging, and hydration needs.
+            </p>
+            <a 
+              href="https://wa.me/9345033110?text=Hello%20Varna%20Naturals,%20I%20would%20like%20to%20book%20a%20Skin%20Consultation" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-block bg-[#ff808b] text-white px-10 py-5 rounded-2xl font-bold tracking-wide hover:bg-[#ff6b78] hover:scale-105 transition-all shadow-xl shadow-rose-400/20 active:scale-95"
+            >
+              BOOK VIA WHATSAPP
+            </a>
+          </div>
         </div>
 
-        <div className="relative z-10 space-y-6">
-          <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto shadow-xl shadow-rose-100 group-hover:scale-110 transition-transform duration-500">
-             <Star className="w-10 h-10 text-[#ff808b] fill-[#ff808b]/20" />
+        {/* Hair Consultation Section */}
+        <div className="flex-1 relative group cursor-pointer overflow-hidden flex flex-col items-center justify-center p-12 text-center">
+          <div className="absolute inset-0 bg-stone-50/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+
+          {/* Decorative background image - blurred -> Clear on hover */}
+          <div className="absolute inset-0 z-0 transition-all duration-1000 grayscale group-hover:grayscale-0 opacity-5 group-hover:opacity-20 group-hover:scale-110">
+            <img src="https://images.unsplash.com/photo-1599305090598-fe179d501227?q=80&w=800&auto=format&fit=crop" className="w-full h-full object-cover" alt="Hair Care Background" />
           </div>
-          <h2 className="text-4xl lg:text-5xl font-serif font-bold text-[#333333]">Skin <br />Consultation</h2>
-          <p className="text-stone-500 max-w-sm mx-auto font-medium leading-relaxed">
-            Personalized analysis of your skin concerns including acne, aging, and hydration needs.
-          </p>
-          <a 
-            href="https://wa.me/9345033110?text=Hello%20Varna%20Naturals,%20I%20would%20like%20to%20book%20a%20Skin%20Consultation" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="inline-block bg-[#ff808b] text-white px-10 py-5 rounded-2xl font-bold tracking-wide hover:bg-[#ff6b78] hover:scale-105 transition-all shadow-xl shadow-rose-400/20 active:scale-95"
-          >
-            BOOK VIA WHATSAPP
-          </a>
+
+          <div className="relative z-10 space-y-6">
+            <div className="w-24 h-24 bg-white rounded-full mx-auto shadow-2xl shadow-stone-200/50 overflow-hidden mb-8 border-4 border-white group-hover:scale-110 transition-transform duration-500">
+               <img src="/doctor2.png" className="w-full h-full object-cover" alt="Doctor 2" />
+            </div>
+            <h2 className="text-4xl lg:text-5xl font-serif font-bold text-[#333333]">Hair Consultation</h2>
+            <p className="text-stone-500 max-w-sm mx-auto font-medium leading-relaxed">
+              Expert guidance for hair fall, scalp health, and choosing the right natural oil blend.
+            </p>
+            <a 
+              href="https://wa.me/9345033110?text=Hello%20Varna%20Naturals,%20I%20would%20like%20to%20book%20a%20Hair%20Consultation" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-block bg-[#333333] text-white px-10 py-5 rounded-2xl font-bold tracking-wide hover:bg-black hover:scale-105 transition-all shadow-xl shadow-stone-400/20 active:scale-95"
+            >
+              BOOK VIA WHATSAPP
+            </a>
+          </div>
         </div>
       </div>
 
-      {/* Hair Consultation Section */}
-      <div className="flex-1 relative group cursor-pointer overflow-hidden flex flex-col items-center justify-center p-12 text-center">
-        <div className="absolute inset-0 bg-stone-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-
-        {/* Decorative background image - blurred */}
-        <div className="absolute inset-0 z-0 opacity-5 grayscale group-hover:scale-110 transition-transform duration-1000">
-          <img src="https://images.unsplash.com/photo-1599305090598-fe179d501227?q=80&w=800&auto=format&fit=crop" className="w-full h-full object-cover" alt="Hair Care Background" />
-        </div>
-
-        <div className="relative z-10 space-y-6">
-          <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto shadow-xl shadow-stone-100 group-hover:scale-110 transition-transform duration-500">
-             <Box className="w-10 h-10 text-stone-400" />
+      {/* Form Section */}
+      <div id="consultation-form" className="snap-start py-24 bg-white relative">
+        <div className="max-w-3xl mx-auto px-8">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl lg:text-4xl font-serif font-bold text-stone-900 mb-4">Request a Personalized Plan</h3>
+            <p className="text-stone-500 font-medium">Fill in your details and our experts will reach out to you.</p>
           </div>
-          <h2 className="text-4xl lg:text-5xl font-serif font-bold text-[#333333]">Hair <br />Consultation</h2>
-          <p className="text-stone-500 max-w-sm mx-auto font-medium leading-relaxed">
-            Expert guidance for hair fall, scalp health, and choosing the right natural oil blend.
-          </p>
-          <a 
-            href="https://wa.me/9345033110?text=Hello%20Varna%20Naturals,%20I%20would%20like%20to%20book%20a%20Hair%20Consultation" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="inline-block bg-[#333333] text-white px-10 py-5 rounded-2xl font-bold tracking-wide hover:bg-black hover:scale-105 transition-all shadow-xl shadow-stone-400/20 active:scale-95"
-          >
-            BOOK VIA WHATSAPP
-          </a>
+
+          <form onSubmit={handleSubmit} className="space-y-8 bg-[#fdfdfd] p-8 lg:p-14 rounded-[3rem] shadow-[0_30px_70px_-15px_rgba(0,0,0,0.08)] border border-stone-100 relative group overflow-hidden">
+            {/* Subtle decorative background element */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-rose-50/50 rounded-bl-full pointer-events-none opacity-50"></div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em] ml-1">Your Name</label>
+                <input required name="name" type="text" placeholder="e.g. Aditi Sharma" className="w-full bg-white border border-stone-100 px-6 py-4.5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-100/50 focus:border-rose-300 transition-all text-stone-700 font-medium placeholder:text-stone-300 shadow-sm" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em] ml-1">Product Interested</label>
+                <select required name="product" className="w-full bg-white border border-stone-100 px-6 py-4.5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-100/50 focus:border-rose-300 transition-all text-stone-700 font-medium appearance-none shadow-sm cursor-pointer">
+                  <option value="">Select a product</option>
+                  <option value="Beetroot Lip Balm">Beetroot Lip Balm</option>
+                  <option value="Herbal Hair Oil">Herbal Hair Oil</option>
+                  <option value="Softening Foot Cream">Softening Foot Cream</option>
+                  <option value="Other / General Consultation">Other / General Consultation</option>
+                </select>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em] ml-1">Message (Optional)</label>
+              <textarea 
+                name="message" 
+                rows={4} 
+                placeholder="Tell us more about your skin or hair concerns..." 
+                className="w-full bg-white border border-stone-100 px-6 py-4.5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-100/50 focus:border-rose-300 transition-all text-stone-700 font-medium placeholder:text-stone-300 shadow-sm resize-none"
+              ></textarea>
+            </div>
+
+            <button 
+              type="submit" 
+              className="w-full bg-stone-900 text-white py-6 rounded-2xl font-bold tracking-widest text-xs uppercase hover:bg-black transition-all shadow-xl shadow-stone-200 active:scale-[0.98] flex items-center justify-center gap-4 group"
+            >
+              SEND REQUEST ON WHATSAPP
+              <ArrowDownCircle className="w-5 h-5 -rotate-90 group-hover:translate-x-1 transition-transform" />
+            </button>
+          </form>
         </div>
+      </div>
+
+      <div className="snap-start">
+        <Footer setView={setView} />
       </div>
     </div>
   );
