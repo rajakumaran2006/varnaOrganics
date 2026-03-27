@@ -33,7 +33,7 @@ export default function App() {
       )}
       
       {view === 'home' ? (
-        <div className="h-[calc(100vh-96px)] overflow-y-auto lg:snap-y lg:snap-mandatory scroll-smooth hide-scrollbar bg-white">
+        <div className="h-[calc(100vh-96px)] overflow-y-auto snap-y snap-proximity scroll-smooth hide-scrollbar bg-white">
           <Hero setView={setView} />
           <AboutSection />
           <PopularProducts onMoreDetails={scrollToProduct} openConsultation={() => setIsConsultationModalOpen(true)} />
@@ -44,7 +44,7 @@ export default function App() {
         </div>
       ) : view === 'products' ? (
         <>
-          <div className="h-[calc(100vh-96px)] overflow-y-auto snap-y snap-mandatory scroll-smooth hide-scrollbar bg-[#f9f8f4]">
+          <div className="h-[calc(100vh-96px)] overflow-y-auto snap-y snap-proximity scroll-smooth hide-scrollbar bg-[#f9f8f4]">
             <ProductShowcase 
               id="lib-balm"
               productName="Beetroot Lip Balm"
@@ -88,7 +88,7 @@ export default function App() {
             />
             
             {/* Footer inside products scrollable area */}
-            <div className="snap-start">
+            <div className="lg:snap-start">
               <Footer setView={setView} openConsultation={() => setIsConsultationModalOpen(true)} />
             </div>
           </div>
@@ -103,7 +103,7 @@ export default function App() {
 
 function WhyChooseUs({ setView, openConsultation }: { setView: (view: 'home' | 'products' | 'consultation') => void, openConsultation: () => void }) {
   return (
-    <section id="WhyChooseUs" className="w-full min-h-screen lg:h-full lg:snap-start bg-[#fdfdfd] py-16 lg:py-24 relative flex items-center">
+    <section id="WhyChooseUs" className="w-full min-h-screen lg:h-full lg:snap-start bg-[#fdfdfd] py-16 lg:py-24 relative overflow-hidden flex items-center">
       <div className="max-w-7xl mx-auto px-6 md:px-8 relative z-10 w-full">
         
         {/* Top left Trusted by badge */}
@@ -291,7 +291,7 @@ function Header({ setView, openConsultation }: { setView: (view: 'home' | 'produ
 
 function Hero({ setView }: { setView: (view: 'home' | 'products' | 'consultation') => void }) {
   return (
-    <div id="Hero" className="w-full min-h-[calc(100vh-96px)] lg:h-full lg:snap-start bg-[#f7f7f7] relative overflow-hidden flex items-center py-12 lg:py-0">
+    <div className="w-full lg:h-full min-h-[calc(100vh-96px)] lg:snap-start bg-[#f7f7f7] relative overflow-hidden flex items-center py-12 lg:py-0">
       {/* Decorative Assets - Restricted to Hero Section */}
       <img 
         src="/assets/images/heroSectionTop.png" 
@@ -350,7 +350,7 @@ function Hero({ setView }: { setView: (view: 'home' | 'products' | 'consultation
 
 function AboutSection() {
   return (
-    <section id="AboutSection" className="w-full min-h-screen lg:h-full lg:snap-start bg-white relative overflow-hidden py-16 lg:py-24 flex items-center">
+    <section className="w-full lg:h-full lg:snap-start bg-white relative overflow-hidden py-16 lg:py-24 flex items-center">
       {/* Background Concentric Circles */}
       <div className="absolute top-1/2 left-[30%] -translate-x-1/2 -translate-y-1/2 w-[600px] md:w-[1000px] h-[600px] md:h-[1000px] pointer-events-none opacity-[0.03] z-0">
         {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -439,7 +439,7 @@ function PopularProducts({ onMoreDetails, openConsultation }: { onMoreDetails: (
   ];
 
   return (
-    <section id="PopularProducts" className="w-full min-h-screen lg:h-full lg:snap-start relative py-16 lg:py-24 bg-white overflow-hidden flex items-center">
+    <section className="w-full lg:h-full lg:snap-start relative py-16 lg:py-24 bg-white overflow-hidden flex items-center">
       <img 
         src="/assets/images/leaf.png" 
         alt="Leaf Decorative" 
@@ -519,7 +519,7 @@ function FAQSection() {
   ];
 
   return (
-    <section id="FAQSection" className="w-full min-h-screen lg:h-full lg:snap-start relative z-10 py-16 lg:py-24 bg-white overflow-hidden flex items-center">
+    <section className="w-full lg:h-full lg:snap-start relative z-10 py-16 lg:py-24 bg-white overflow-hidden flex items-center">
       {/* Decorative Assets - Top Left Leaf */}
       <img 
         src="/assets/images/heroSectionTop.png" 
@@ -621,7 +621,7 @@ function FeedbackSection() {
   ];
 
   return (
-    <section id="FeedbackSection" className="w-full min-h-screen lg:h-full lg:snap-start bg-[#fcfcff] py-16 lg:py-24 relative overflow-hidden border-t border-stone-100 flex items-center">
+    <section className="w-full lg:h-full lg:snap-start bg-[#fcfcff] py-16 lg:py-24 relative overflow-hidden border-t border-stone-100 flex items-center">
       {/* Decorative Leaves for Feedback Section */}
       <img 
         src="/assets/images/leaf.png" 
@@ -684,7 +684,7 @@ function Footer({ setView, openConsultation }: { setView: (view: 'home' | 'produ
   };
 
   return (
-    <footer className="w-full snap-start bg-[#333333] text-white py-16 lg:py-24 relative z-20">
+    <footer className="w-full lg:snap-start bg-[#333333] text-white py-16 lg:py-24 relative z-20">
       <div className="max-w-7xl mx-auto px-6 md:px-8 w-full">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-y-12 md:gap-y-16 lg:gap-x-12 mb-16">
           {/* Column 1: Brand */}
@@ -1069,7 +1069,7 @@ function ConsultationView({ setView }: { setView: (view: 'home' | 'products' | '
         </div>
       </div>
 
-      <div className="snap-start">
+      <div className="lg:snap-start">
         <Footer setView={setView} openConsultation={() => setIsModalOpen(true)} />
       </div>
     </div>
