@@ -1007,11 +1007,11 @@ function ConsultationView({ setView }: { setView: (view: 'home' | 'products' | '
   };
 
   return (
-    <div className="h-[calc(100vh-96px)] overflow-y-auto snap-y snap-mandatory scroll-smooth hide-scrollbar transition-all bg-[#fdfdfd]">
+    <div className="h-[calc(100vh-96px)] overflow-y-auto snap-y snap-proximity scroll-smooth hide-scrollbar transition-all bg-[#fdfdfd]">
       {isModalOpen && <ConsultationModal onClose={() => setIsModalOpen(false)} />}
       
       {/* Hero Sections Wrapper */}
-      <div className="h-full flex flex-col lg:flex-row snap-start">
+      <div className="min-h-full flex flex-col lg:flex-row snap-start">
         {/* Skin Consultation Section */}
         <div className="flex-1 relative group cursor-pointer overflow-hidden flex flex-col items-start justify-center p-8 md:p-12 text-left border-r border-stone-100">
           <div className="absolute inset-0 bg-rose-50/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
@@ -1069,7 +1069,7 @@ function ConsultationView({ setView }: { setView: (view: 'home' | 'products' | '
         </div>
       </div>
 
-      <div className="lg:snap-start">
+      <div className="snap-start">
         <Footer setView={setView} openConsultation={() => setIsModalOpen(true)} />
       </div>
     </div>
