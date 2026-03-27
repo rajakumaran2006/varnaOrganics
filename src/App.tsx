@@ -3,6 +3,7 @@ import { ShoppingCart, ChevronDown, Check, Star, ArrowDownCircle, ArrowUpCircle,
 
 export default function App() {
   const [view, setView] = React.useState<'home' | 'products' | 'consultation'>('home');
+  const [isConsultationModalOpen, setIsConsultationModalOpen] = React.useState(false);
 
   const scrollToProduct = (id: string) => {
     if (id === 'other') {
@@ -25,27 +26,31 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-stone-800 relative overflow-hidden flex flex-col">
-      <Header setView={setView} />
+      <Header setView={setView} openConsultation={() => setIsConsultationModalOpen(true)} />
+      
+      {isConsultationModalOpen && (
+        <ConsultationModal onClose={() => setIsConsultationModalOpen(false)} />
+      )}
       
       {view === 'home' ? (
-        <>
+        <div className="h-[calc(100vh-96px)] overflow-y-auto snap-y snap-mandatory scroll-smooth hide-scrollbar bg-white">
           <Hero setView={setView} />
           <AboutSection />
-          <PopularProducts onMoreDetails={scrollToProduct} />
-          <WhyChooseUs setView={setView} />
+          <PopularProducts onMoreDetails={scrollToProduct} openConsultation={() => setIsConsultationModalOpen(true)} />
+          <WhyChooseUs setView={setView} openConsultation={() => setIsConsultationModalOpen(true)} />
           <FeedbackSection />
           <FAQSection />
-          <Footer setView={setView} />
-        </>
+          <Footer setView={setView} openConsultation={() => setIsConsultationModalOpen(true)} />
+        </div>
       ) : view === 'products' ? (
         <>
-          <div className="h-[calc(100vh-80px)] overflow-y-auto snap-y snap-mandatory scroll-smooth hide-scrollbar bg-[#f9f8f4]">
+          <div className="h-[calc(100vh-96px)] overflow-y-auto snap-y snap-mandatory scroll-smooth hide-scrollbar bg-[#f9f8f4]">
             <ProductShowcase 
               id="lib-balm"
               productName="Beetroot Lip Balm"
-              title="Everything Has Beauty, But Not Everyone Sees It"
+              title={<>Everything Has Beauty,<br />But Not Everyone<br />Sees It</>}
               description="Our Beetroot Lip Balm is formulated with 100% natural extracts, providing deep hydration and a subtle natural tint that lasts all day long."
-              image="/p1.png"
+              image="/assets/images/p1.png"
               categories={["Lip Care", "Natural", "Organic"]}
               rightContent={{
                 heading: "Our team of skin specialists works directly with state-of-the-art technology to create products that provide optimal care.",
@@ -57,9 +62,9 @@ export default function App() {
             <ProductShowcase 
               id="foot-cream"
               productName="Softening Foot Cream"
-              title="Experience Ultimate Softness with Every Step"
+              title={<>Experience Ultimate<br />Softness with<br />Every Step</>}
               description="Our specialized Foot Cream combines intensive moisture with natural healing properties to soothe tired feet and repair dry, cracked skin."
-              image="/p2.png"
+              image="/assets/images/p2.png"
               categories={["Foot Care", "Healing", "Intensive"]}
               rightContent={{
                 heading: "Crafted by dermatologists, our formulas prioritize deep penetration and long-lasting protection for all skin types.",
@@ -71,9 +76,9 @@ export default function App() {
             <ProductShowcase 
               id="hair-oil"
               productName="Herbal Hair Oil"
-              title="Strengthen Your Roots with Natural Potency"
+              title={<>Strengthen Your Roots<br />with Natural<br />Potency</>}
               description="Our specialized Hair Oil is a blend of traditional herbal extracts designed to nourish the scalp, reduce hair fall, and promote healthy growth."
-              image="/p3.png"
+              image="/assets/images/p3.png"
               categories={["Hair Care", "Nourishment", "Natural"]}
               rightContent={{
                 heading: "Formulated based on individual consultation, our hair oil targets root strength and scalp health for comprehensive care.",
@@ -81,10 +86,24 @@ export default function App() {
                 secondaryText: "Brahmi and Amla extracts work together to strengthen hair follicles from within, promoting healthy growth."
               }}
             />
+
+            <ProductShowcase 
+              id="other"
+              productName="Personalized Wellness Plan"
+              title={<>Your Journey To<br />Complete Holistic<br />Natural Care</>}
+              description="Not sure which product is right for you? Our experts provide personalized consultations to understand your unique skin and hair profile before formulating a solution."
+              image="/assets/images/logo.png"
+              categories={["Consultation", "Expert Led", "Personalized"]}
+              rightContent={{
+                heading: "We believe in care that goes beyond the surface, addressing the root cause through natural and herbal wisdom.",
+                secondaryTitle: "Personalized Care",
+                secondaryText: "Schedule a one-on-one session with our wellness experts to receive a customized routine and product recommendations."
+              }}
+            />
             
             {/* Footer inside products scrollable area */}
             <div className="snap-start">
-              <Footer setView={setView} />
+              <Footer setView={setView} openConsultation={() => setIsConsultationModalOpen(true)} />
             </div>
           </div>
         </>
@@ -96,18 +115,18 @@ export default function App() {
 }
 
 
-function WhyChooseUs({ setView }: { setView: (view: 'home' | 'products' | 'consultation') => void }) {
+function WhyChooseUs({ setView, openConsultation }: { setView: (view: 'home' | 'products' | 'consultation') => void, openConsultation: () => void }) {
   return (
-    <section className="w-full bg-[#fdfdfd] pt-16 pb-0 relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-8 relative z-10 h-full">
+    <section className="w-full h-full snap-start bg-[#fdfdfd] py-16 relative overflow-hidden flex items-center">
+      <div className="max-w-7xl mx-auto px-8 relative z-10 w-full">
         
         {/* Top left Trusted by badge */}
         <div className="flex items-center gap-3 mb-12 animate-fade-in translate-x-2">
           <div className="flex -space-x-2">
             {[
-              "public/people.png",
-              "public/people2.png",
-              "public/people3.png"
+              "/assets/images/people.png",
+              "/assets/images/people2.png",
+              "/assets/images/people3.png"
             ].map((src, i) => (
               <img 
                 key={i} 
@@ -137,7 +156,7 @@ function WhyChooseUs({ setView }: { setView: (view: 'home' | 'products' | 'consu
               Our experts understand your face and provide personalized care tailored to your unique needs.
             </p>
             <button 
-              onClick={() => setView('consultation')}
+              onClick={openConsultation}
               className="bg-[#ff808b] text-white px-10 py-5 rounded-2xl font-bold tracking-wide hover:bg-[#ff6b78] hover:scale-105 transition-all shadow-xl shadow-rose-400/20 active:scale-95"
             >
               Talk to our consultant
@@ -151,7 +170,7 @@ function WhyChooseUs({ setView }: { setView: (view: 'home' | 'products' | 'consu
             
             <div className="relative w-full max-w-[500px] h-full flex items-end overflow-hidden group">
               <img 
-                src="/WHYUS.png" 
+                src="/assets/images/whyUs.png" 
                 alt="Skin Analysis" 
                 className="w-full h-auto object-contain drop-shadow-[0_-10px_40px_rgba(0,0,0,0.03)]" 
                 style={{
@@ -206,35 +225,37 @@ function WhyChooseUs({ setView }: { setView: (view: 'home' | 'products' | 'consu
   );
 }
 
-function Header({ setView }: { setView: (view: 'home' | 'products' | 'consultation') => void }) {
+function Header({ setView, openConsultation }: { setView: (view: 'home' | 'products' | 'consultation') => void, openConsultation: () => void }) {
   return (
     <header className="w-full z-100 bg-white border-b border-stone-100 sticky top-0">
-      <div className="max-w-7xl mx-auto px-8 py-6 flex items-center justify-between w-full">
-        {/* Logo */}
-        <div className="flex items-center gap-4 cursor-pointer group" onClick={() => setView('home')}>
-          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#ff808b]/20 flex items-center justify-center bg-white group-hover:border-[#ff808b] transition-all">
-             <img src="/logo.png" alt="Varna Naturals Logo" className="w-14 h-14 object-contain" />
-          </div>
-          <div className="flex flex-col">
-            <span className="font-serif text-2xl font-bold leading-none text-stone-800 uppercase">Varna Naturals</span>
-            <span className="text-[11px] text-stone-500 tracking-wider font-medium">Natural Care for Skin, Hair & Wellness</span>
+      <div className="max-w-7xl mx-auto px-8 py-6 flex items-center w-full">
+        {/* Logo container */}
+        <div className="flex-1 flex justify-start">
+          <div className="flex items-center gap-2 cursor-pointer group" onClick={() => setView('home')}>
+            <img src="/assets/images/logo.png" alt="Varna Naturals Logo" className="w-16 h-16 object-contain" />
+            <div className="flex flex-col">
+              <span className="font-serif text-2xl font-bold leading-none text-stone-800 uppercase whitespace-nowrap">Varna Naturals</span>
+              <span className="text-[11px] text-stone-500 tracking-wider font-medium hidden lg:block uppercase">Natural Care for Skin, Hair & Wellness</span>
+            </div>
           </div>
         </div>
 
-        {/* Nav - Vertical alignment fix */}
+        {/* Nav - Center alignment */}
         <nav className="hidden md:flex items-center gap-10 text-sm font-bold text-stone-600 tracking-wide uppercase h-full">
           <button onClick={() => setView('products')} className="hover:text-rose-400 transition-colors uppercase cursor-pointer py-2">PRODUCTS</button>
-          <button onClick={() => setView('consultation')} className="hover:text-rose-400 transition-colors uppercase cursor-pointer py-2">Consultation</button>
+          <button onClick={() => setView('consultation')} className="hover:text-rose-400 transition-colors uppercase cursor-pointer py-2">CONSULTATION</button>
         </nav>
 
-        {/* Actions - Vertical alignment fix */}
-        <div className="flex items-center gap-4 h-full">
-          <button 
-            onClick={() => { setView('consultation'); setTimeout(() => document.getElementById('consultation-form')?.scrollIntoView({ behavior: 'smooth' }), 100); }}
-            className="bg-[#ff808b] hover:bg-[#ff6b78] text-white px-8 py-3.5 rounded-full font-bold tracking-wide transition-all shadow-lg shadow-rose-400/20 active:scale-95 text-xs h-fit"
-          >
-            GET STARTED
-          </button>
+        {/* Actions - Right alignment container */}
+        <div className="flex-1 flex justify-end">
+          <div className="flex items-center gap-4 h-full">
+            <button 
+              onClick={openConsultation}
+              className="bg-[#ff808b] hover:bg-[#ff6b78] text-white px-8 py-3.5 rounded-full font-bold tracking-wide transition-all shadow-lg shadow-rose-400/20 active:scale-95 text-xs h-fit"
+            >
+              GET STARTED
+            </button>
+          </div>
         </div>
       </div>
     </header>
@@ -243,18 +264,18 @@ function Header({ setView }: { setView: (view: 'home' | 'products' | 'consultati
 
 function Hero({ setView }: { setView: (view: 'home' | 'products' | 'consultation') => void }) {
   return (
-    <div className="w-full bg-[#f7f7f7] relative overflow-hidden">
+    <div className="w-full h-full snap-start bg-[#f7f7f7] relative overflow-hidden flex items-center">
       {/* Decorative Assets - Restricted to Hero Section */}
       <img 
-        src="/heroSectionTop.png" 
+        src="/assets/images/heroSectionTop.png" 
         alt="Hero Top Decorative" 
-        className="absolute top-0 left-0 w-[450px] pointer-events-none z-0 object-contain" 
+        className="absolute top-0 left-0 w-[450px] pointer-events-none z-0 object-contain opacity-30" 
       />
       
       <img 
-        src="/heroSectionTop.png" 
+        src="/assets/images/heroSectionTop.png" 
         alt="Hero Bottom Decorative" 
-        className="absolute bottom-0 right-0 w-[450px] pointer-events-none z-20 object-contain rotate-180" 
+        className="absolute bottom-0 right-0 w-[450px] pointer-events-none z-20 object-contain rotate-180 opacity-30" 
       />
 
       <main className="max-w-7xl mx-auto w-full px-8 pt-10 pb-28 flex flex-col lg:flex-row items-center gap-12 relative z-10">
@@ -289,9 +310,9 @@ function Hero({ setView }: { setView: (view: 'home' | 'products' | 'consultation
             {/* Arched Background */}
             <div className="absolute top-0 right-0 w-full h-full bg-[#fdf2f0] rounded-t-full rounded-b-[3rem] z-0 shadow-inner"></div>
             
-            {/* Model Image from public/hero.png */}
+            {/* Model Image from assets/images/hero.png */}
             <img 
-              src="/hero.png" 
+              src="/assets/images/hero.png" 
               alt="Hero" 
               className="relative z-10 h-[105%] w-full object-contain object-bottom scale-110 -translate-y-[2%]"
             />
@@ -304,7 +325,7 @@ function Hero({ setView }: { setView: (view: 'home' | 'products' | 'consultation
 
 function AboutSection() {
   return (
-    <section className="w-full bg-white relative overflow-hidden py-32">
+    <section className="w-full h-full snap-start bg-white relative overflow-hidden py-16 flex items-center">
       {/* Background Concentric Circles */}
       <div className="absolute top-1/2 left-[30%] -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] pointer-events-none opacity-[0.03] z-0">
         {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -330,7 +351,7 @@ function AboutSection() {
           
           <div className="relative group">
             <img 
-              src="/about.png" 
+              src="/assets/images/about.png" 
               alt="Natural Ingredients" 
               className="relative z-10 w-full max-w-2xl object-contain drop-shadow-2xl transition-transform duration-700 group-hover:scale-[1.02]"
             />
@@ -359,7 +380,7 @@ function AboutSection() {
               </p>
             </div>
             <div className="pt-2">
-              <p className="font-cursive text-5xl text-stone-800 tracking-wide opacity-90">Varna Naturals</p>
+              <p className="font-cursive text-5xl text-stone-800 tracking-wide opacity-90 uppercase">Varna Naturals</p>
             </div>
           </div>
         </div>
@@ -368,7 +389,7 @@ function AboutSection() {
   );
 }
 
-function PopularProducts({ onMoreDetails }: { onMoreDetails: (id: string) => void }) {
+function PopularProducts({ onMoreDetails, openConsultation }: { onMoreDetails: (id: string) => void, openConsultation: () => void }) {
   const products = [
     {
       name: 'LIB BALM',
@@ -393,16 +414,16 @@ function PopularProducts({ onMoreDetails }: { onMoreDetails: (id: string) => voi
   ];
 
   return (
-    <section className="w-full relative py-32 bg-white overflow-hidden">
+    <section className="w-full h-full snap-start relative py-16 bg-white overflow-hidden flex items-center">
       <img 
-        src="/leaf.png" 
+        src="/assets/images/leaf.png" 
         alt="Leaf Decorative" 
-        className="absolute -top-12 -left-22 w-64 lg:w-[480px] pointer-events-none z-0 object-contain drop-shadow-sm opacity-90" 
+        className="absolute -top-36 -left-22 w-64 lg:w-[480px] pointer-events-none z-0 object-contain drop-shadow-sm opacity-90" 
       />
       <img 
-        src="/leaf.png" 
+        src="/assets/images/leaf.png" 
         alt="Leaf Decorative" 
-        className="absolute -bottom-18 -right-22 w-64 lg:w-[480px] pointer-events-none z-0 object-contain rotate-180 drop-shadow-sm opacity-90" 
+        className="absolute -bottom-36 -right-22 w-64 lg:w-[480px] pointer-events-none z-0 object-contain rotate-180 drop-shadow-sm opacity-90" 
       />
 
       <div className="max-w-7xl mx-auto px-8 relative z-10">
@@ -436,7 +457,7 @@ function PopularProducts({ onMoreDetails }: { onMoreDetails: (id: string) => voi
               </div>
 
               <button 
-                onClick={() => onMoreDetails(product.id)}
+                onClick={() => product.id === 'other' ? openConsultation() : onMoreDetails(product.id)}
                 className="mt-10 bg-[#333333] text-white rounded-xl w-full py-4 font-bold tracking-widest text-[10px] uppercase transition-all hover:bg-[#ff808b] shadow-lg shadow-stone-200 active:scale-[0.98]"
               >
                 {product.id === 'other' ? 'Seek Consultation' : 'More Details'}
@@ -473,17 +494,17 @@ function FAQSection() {
   ];
 
   return (
-    <section className="w-full relative z-10 py-24 bg-white overflow-hidden">
+    <section className="w-full h-full snap-start relative z-10 py-16 bg-white overflow-hidden flex items-center">
       {/* Decorative Assets - Top Left Leaf */}
       <img 
-        src="/heroSectionTop.png" 
+        src="/assets/images/heroSectionTop.png" 
         alt="Decorative Leaf Top" 
         className="absolute -top-10 -left-10 w-[300px] pointer-events-none z-0 opacity-90 transition-transform duration-1000 hover:rotate-3" 
       />
       
       {/* Decorative Assets - Bottom Right Leaf */}
       <img 
-        src="/heroSectionTop.png" 
+        src="/assets/images/heroSectionTop.png" 
         alt="Decorative Leaf Bottom" 
         className="absolute -bottom-10 -right-10 w-[300px] pointer-events-none z-0 opacity-90 rotate-180 transition-transform duration-1000" 
       />
@@ -537,7 +558,7 @@ function FAQSection() {
           {/* Main FAQ ImageCentered inside the shape */}
           <div className="relative z-10 w-full h-[110%] flex items-center justify-center">
             <img 
-              src="/faq.png" 
+              src="/assets/images/faq.png" 
               alt="FAQ" 
               className="h-full w-auto object-contain object-center scale-110 -translate-y-[5%] hover:scale-115 transition-all duration-700"
             />
@@ -554,36 +575,36 @@ function FeedbackSection() {
     {
       name: "Abirami Sethuraman",
       role: "Skin Care Enthusiast",
-      image: "public/people.png",
+      image: "/assets/images/people.png",
       text: "The Beetroot Lip Balm is amazing! It keeps my lips hydrated throughout the day even in Chennai's heat. Highly recommend!",
       stars: 5
     },
     {
       name: "Karthikeyan P.",
       role: "Athlete",
-      image: "public/people2.png",
+      image: "/assets/images/people2.png",
       text: "The Hair Oil and Foot Cream have become essential parts of my routine. I can really feel the difference of pure herbal ingredients.",
       stars: 5
     },
     {
       name: "Meenakshi Sundaram",
       role: "Graphic Designer",
-      image: "public/people3.png",
+      image: "/assets/images/people3.png",
       text: "Varna Naturals has finally given me a natural alternative that actually works. The consultation was very helpful in choosing the right products.",
       stars: 5
     }
   ];
 
   return (
-    <section className="w-full bg-[#fcfcff] py-24 relative overflow-hidden border-t border-stone-100">
+    <section className="w-full h-full snap-start bg-[#fcfcff] py-16 relative overflow-hidden border-t border-stone-100 flex items-center">
       {/* Decorative Leaves for Feedback Section */}
       <img 
-        src="/leaf.png" 
+        src="/assets/images/leaf.png" 
         alt="Decorative Leaf" 
         className="absolute -top-20 -left-20 w-64 opacity-10 pointer-events-none" 
       />
       <img 
-        src="/leaf.png" 
+        src="/assets/images/leaf.png" 
         alt="Decorative Leaf" 
         className="absolute -bottom-20 -right-20 w-64 opacity-10 pointer-events-none rotate-180" 
       />
@@ -614,19 +635,39 @@ function FeedbackSection() {
   );
 }
 
-function Footer({ setView }: { setView: (view: 'home' | 'products' | 'consultation') => void }) {
+function Footer({ setView, openConsultation }: { setView: (view: 'home' | 'products' | 'consultation') => void, openConsultation: () => void }) {
+  const scrollToId = (id: string) => {
+    setView('home');
+    setTimeout(() => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  };
+
+  const scrollToProductPage = (id: string) => {
+    setView('products');
+    setTimeout(() => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 100);
+  };
+
   return (
-    <footer className="w-full bg-[#333333] text-white py-16 relative z-20">
-      <div className="max-w-7xl mx-auto px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+    <footer className="w-full snap-start bg-[#333333] text-white py-16 lg:py-24 relative z-20">
+      <div className="max-w-7xl mx-auto px-8 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-y-16 lg:gap-x-12 mb-16">
           {/* Column 1: Brand */}
-          <div className="flex flex-col">
-            <div className="flex items-center gap-3 mb-6 cursor-pointer" onClick={() => { setView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
-              <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-[#ff808b] flex items-center justify-center bg-white">
-                 <img src="/logo.png" alt="Varna Naturals Logo" className="w-12 h-12 object-contain" />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-serif text-3xl text-white leading-none font-bold">Varna Naturals</span>
+          <div className="lg:col-span-4 flex flex-col pr-0 lg:pr-8">
+            <div className="flex items-center gap-2 mb-6 cursor-pointer" onClick={() => { setView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+              <img src="/assets/images/footerLogo.png" alt="Varna Naturals Logo" className="w-16 h-16 object-contain" />
+              <div className="flex flex-col min-w-max">
+                <span className="font-serif text-3xl text-white leading-none font-bold uppercase whitespace-nowrap">Varna Naturals</span>
                 <span className="text-[10px] text-stone-400 tracking-widest uppercase mt-1">Natural Care for Skin, Hair & Wellness</span>
               </div>
             </div>
@@ -636,28 +677,61 @@ function Footer({ setView }: { setView: (view: 'home' | 'products' | 'consultati
           </div>
 
           {/* Column 2: Quick Link */}
-          <div className="flex flex-col">
+          <div className="lg:col-span-3 flex flex-col">
             <h4 className="text-2xl font-bold mb-6 tracking-tight">Quick Link</h4>
             <ul className="space-y-4">
-              <li onClick={() => { setView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="flex items-center gap-2 text-stone-300 hover:text-[#ff808b] cursor-pointer transition-colors">
-                <Check size={16} className="text-[#ff808b]" />
+              <li onClick={() => { setView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="flex items-center gap-2 text-stone-300 hover:text-[#ff808b] cursor-pointer transition-colors group">
+                <Check size={16} className="text-[#ff808b] group-hover:scale-110 transition-transform" />
+                <span>Home</span>
+              </li>
+              <li onClick={() => scrollToId('AboutSection')} className="flex items-center gap-2 text-stone-300 hover:text-[#ff808b] cursor-pointer transition-colors group">
+                <Check size={16} className="text-[#ff808b] group-hover:scale-110 transition-transform" />
                 <span>About</span>
               </li>
-              <li onClick={() => { setView('products'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="flex items-center gap-2 text-stone-300 hover:text-[#ff808b] cursor-pointer transition-colors">
-                <Check size={16} className="text-[#ff808b]" />
-                <span>Product</span>
+              <li onClick={() => scrollToId('PopularProducts')} className="flex items-center gap-2 text-stone-300 hover:text-[#ff808b] cursor-pointer transition-colors group">
+                <Check size={16} className="text-[#ff808b] group-hover:scale-110 transition-transform" />
+                <span>Our Popular</span>
               </li>
-              <li onClick={() => { setView('consultation'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="flex items-center gap-2 text-stone-300 hover:text-[#ff808b] cursor-pointer transition-colors">
-                <Check size={16} className="text-[#ff808b]" />
-                <span>Consultation</span>
+              <li onClick={() => scrollToId('WhyChooseUs')} className="flex items-center gap-2 text-stone-300 hover:text-[#ff808b] cursor-pointer transition-colors group">
+                <Check size={16} className="text-[#ff808b] group-hover:scale-110 transition-transform" />
+                <span>Why Choose Us</span>
+              </li>
+              <li onClick={() => scrollToId('FeedbackSection')} className="flex items-center gap-2 text-stone-300 hover:text-[#ff808b] cursor-pointer transition-colors group">
+                <Check size={16} className="text-[#ff808b] group-hover:scale-110 transition-transform" />
+                <span>Our Customer Say</span>
+              </li>
+              <li onClick={() => scrollToId('FAQSection')} className="flex items-center gap-2 text-stone-300 hover:text-[#ff808b] cursor-pointer transition-colors group">
+                <Check size={16} className="text-[#ff808b] group-hover:scale-110 transition-transform" />
+                <span>FAQ</span>
               </li>
             </ul>
           </div>
 
-          <div className="hidden lg:block lg:col-span-1"></div>
+          {/* Column 3: Products */}
+          <div className="lg:col-span-3 flex flex-col">
+            <h4 className="text-2xl font-bold mb-6 tracking-tight">Products</h4>
+            <ul className="space-y-4">
+              <li onClick={() => scrollToProductPage('lib-balm')} className="flex items-center gap-2 text-stone-300 hover:text-[#ff808b] cursor-pointer transition-colors group">
+                <ShoppingCart size={16} className="text-[#ff808b] group-hover:scale-110 transition-transform" />
+                <span>Lip Balm</span>
+              </li>
+              <li onClick={() => scrollToProductPage('foot-cream')} className="flex items-center gap-2 text-stone-300 hover:text-[#ff808b] cursor-pointer transition-colors group">
+                <ShoppingCart size={16} className="text-[#ff808b] group-hover:scale-110 transition-transform" />
+                <span>Foot Cream</span>
+              </li>
+              <li onClick={() => scrollToProductPage('hair-oil')} className="flex items-center gap-2 text-stone-300 hover:text-[#ff808b] cursor-pointer transition-colors group">
+                <ShoppingCart size={16} className="text-[#ff808b] group-hover:scale-110 transition-transform" />
+                <span>Hair Oil</span>
+              </li>
+              <li onClick={openConsultation} className="flex items-center gap-2 text-stone-300 hover:text-[#ff808b] cursor-pointer transition-colors group">
+                <ShoppingCart size={16} className="text-[#ff808b] group-hover:scale-110 transition-transform" />
+                <span>Book a Consultation</span>
+              </li>
+            </ul>
+          </div>
 
           {/* Column 4: Get In Touch */}
-          <div className="flex flex-col">
+          <div className="lg:col-span-2 flex flex-col">
             <h4 className="text-2xl font-bold mb-6 tracking-tight">Get In Touch</h4>
             <ul className="space-y-4 mb-8">
               <li className="flex items-center gap-3 text-stone-300">
@@ -682,7 +756,7 @@ function Footer({ setView }: { setView: (view: 'home' | 'products' | 'consultati
 interface ProductShowcaseProps {
   id: string;
   productName: string;
-  title: string;
+  title: React.ReactNode;
   description: string;
   image: string;
   categories: string[];
@@ -702,10 +776,10 @@ function ProductShowcase({ id, productName, title, description, image, categorie
         backgroundSize: '100px 100px'
       }}></div>
 
-      <div className="max-w-7xl mx-auto px-8 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center w-full">
+      <div className="max-w-7xl mx-auto px-8 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center w-full">
         
         {/* Left Column - More compact */}
-        <div className="lg:col-span-4 flex flex-col justify-center gap-6 lg:gap-8">
+        <div className="lg:col-span-5 flex flex-col justify-center gap-6 lg:gap-8">
 
           <div className="space-y-4 lg:space-y-6">
             <h2 className="text-stone-900 text-3xl lg:text-5xl xl:text-6xl font-serif font-bold leading-tight tracking-tight">
@@ -752,7 +826,7 @@ function ProductShowcase({ id, productName, title, description, image, categorie
         </div>
 
         {/* Right Column - Reorganized for vertical space efficiency */}
-        <div className="lg:col-span-4 flex flex-col justify-center gap-8 lg:gap-12 h-full">
+        <div className="lg:col-span-3 flex flex-col justify-center gap-8 lg:gap-12 h-full">
           <div className="space-y-3 lg:space-y-4">
             <p className="text-stone-600 text-sm lg:text-base font-medium leading-relaxed italic border-l-2 border-rose-200 pl-4">
               {rightContent.heading}
@@ -795,7 +869,22 @@ function ProductShowcase({ id, productName, title, description, image, categorie
   );
 }
 
-function ConsultationView({ setView }: { setView: (view: 'home' | 'products' | 'consultation') => void }) {
+function ConsultationModal({ onClose }: { onClose: () => void }) {
+  const [isVisible, setIsVisible] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsVisible(true);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
+
+  const handleClose = () => {
+    setIsVisible(false);
+    setTimeout(onClose, 300);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
@@ -814,78 +903,31 @@ function ConsultationView({ setView }: { setView: (view: 'home' | 'products' | '
   };
 
   return (
-    <div className="h-[calc(100vh-80px)] overflow-y-auto snap-y snap-mandatory scroll-smooth hide-scrollbar transition-all bg-[#fdfdfd]">
+    <div 
+      className={`fixed inset-0 z-1000 flex items-center justify-center px-4 transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+      onClick={(e) => e.target === e.currentTarget && handleClose()}
+    >
+      <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm"></div>
       
-      {/* Hero Sections Wrapper */}
-      <div className="h-full flex flex-col lg:flex-row snap-start">
-        {/* Skin Consultation Section */}
-        <div className="flex-1 relative group cursor-pointer overflow-hidden flex flex-col items-center justify-center p-12 text-center border-r border-stone-100">
-          <div className="absolute inset-0 bg-rose-50/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-          
-          {/* Decorative background image - blurred -> Clear on hover */}
-          <div className="absolute inset-0 z-0 transition-all duration-1000 grayscale group-hover:grayscale-0 opacity-5 group-hover:opacity-20 group-hover:scale-110">
-            <img src="https://images.unsplash.com/photo-1552693673-1bf958298935?q=80&w=800&auto=format&fit=crop" className="w-full h-full object-cover" alt="Skin Care Background" />
-          </div>
+      <div 
+        className={`relative w-full max-w-3xl bg-white rounded-[3rem] shadow-2xl overflow-hidden transition-transform duration-300 ${isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-8'}`}
+      >
+        <button 
+          onClick={handleClose}
+          className="absolute top-8 right-8 text-stone-400 hover:text-stone-800 transition-colors z-10"
+        >
+          <ArrowDownCircle className="w-8 h-8 rotate-45" />
+        </button>
 
-          <div className="relative z-10 space-y-6">
-            <div className="w-24 h-24 bg-white rounded-full mx-auto shadow-2xl shadow-rose-200/50 overflow-hidden mb-8 border-4 border-white group-hover:scale-110 transition-transform duration-500">
-               <img src="/doctor1.png" className="w-full h-full object-cover" alt="Doctor 1" />
-            </div>
-            <h2 className="text-4xl lg:text-5xl font-serif font-bold text-[#333333]">Skin Consultation</h2>
-            <p className="text-stone-500 max-w-sm mx-auto font-medium leading-relaxed">
-              Personalized analysis of your skin concerns including acne, aging, and hydration needs.
-            </p>
-            <a 
-              href="https://wa.me/9345033110?text=Hello%20Varna%20Naturals,%20I%20would%20like%20to%20book%20a%20Skin%20Consultation" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-block bg-[#ff808b] text-white px-10 py-5 rounded-2xl font-bold tracking-wide hover:bg-[#ff6b78] hover:scale-105 transition-all shadow-xl shadow-rose-400/20 active:scale-95"
-            >
-              BOOK VIA WHATSAPP
-            </a>
-          </div>
-        </div>
-
-        {/* Hair Consultation Section */}
-        <div className="flex-1 relative group cursor-pointer overflow-hidden flex flex-col items-center justify-center p-12 text-center">
-          <div className="absolute inset-0 bg-stone-50/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-
-          {/* Decorative background image - blurred -> Clear on hover */}
-          <div className="absolute inset-0 z-0 transition-all duration-1000 grayscale group-hover:grayscale-0 opacity-5 group-hover:opacity-20 group-hover:scale-110">
-            <img src="https://images.unsplash.com/photo-1599305090598-fe179d501227?q=80&w=800&auto=format&fit=crop" className="w-full h-full object-cover" alt="Hair Care Background" />
-          </div>
-
-          <div className="relative z-10 space-y-6">
-            <div className="w-24 h-24 bg-white rounded-full mx-auto shadow-2xl shadow-stone-200/50 overflow-hidden mb-8 border-4 border-white group-hover:scale-110 transition-transform duration-500">
-               <img src="/doctor2.png" className="w-full h-full object-cover" alt="Doctor 2" />
-            </div>
-            <h2 className="text-4xl lg:text-5xl font-serif font-bold text-[#333333]">Hair Consultation</h2>
-            <p className="text-stone-500 max-w-sm mx-auto font-medium leading-relaxed">
-              Expert guidance for hair fall, scalp health, and choosing the right natural oil blend.
-            </p>
-            <a 
-              href="https://wa.me/9345033110?text=Hello%20Varna%20Naturals,%20I%20would%20like%20to%20book%20a%20Hair%20Consultation" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-block bg-[#333333] text-white px-10 py-5 rounded-2xl font-bold tracking-wide hover:bg-black hover:scale-105 transition-all shadow-xl shadow-stone-400/20 active:scale-95"
-            >
-              BOOK VIA WHATSAPP
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* Form Section */}
-      <div id="consultation-form" className="snap-start py-24 bg-white relative">
-        <div className="max-w-3xl mx-auto px-8">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl lg:text-4xl font-serif font-bold text-stone-900 mb-4">Request a Personalized Plan</h3>
+        <div className="p-8 lg:p-14 max-h-[90vh] overflow-y-auto hide-scrollbar">
+          <div className="text-center mb-10">
+            <h3 className="text-3xl lg:text-4xl font-serif font-bold text-stone-900 mb-4">Get In Touch</h3>
             <p className="text-stone-500 font-medium">Fill in your details and our experts will reach out to you.</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8 bg-[#fdfdfd] p-8 lg:p-14 rounded-[3rem] shadow-[0_30px_70px_-15px_rgba(0,0,0,0.08)] border border-stone-100 relative group overflow-hidden">
+          <form onSubmit={handleSubmit} className="space-y-8 relative group">
             {/* Subtle decorative background element */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-rose-50/50 rounded-bl-full pointer-events-none opacity-50"></div>
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-rose-50/50 rounded-bl-full pointer-events-none opacity-50"></div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-2">
@@ -894,13 +936,16 @@ function ConsultationView({ setView }: { setView: (view: 'home' | 'products' | '
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em] ml-1">Product Interested</label>
-                <select required name="product" className="w-full bg-white border border-stone-100 px-6 py-4.5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-100/50 focus:border-rose-300 transition-all text-stone-700 font-medium appearance-none shadow-sm cursor-pointer">
-                  <option value="">Select a product</option>
-                  <option value="Beetroot Lip Balm">Beetroot Lip Balm</option>
-                  <option value="Herbal Hair Oil">Herbal Hair Oil</option>
-                  <option value="Softening Foot Cream">Softening Foot Cream</option>
-                  <option value="Other / General Consultation">Other / General Consultation</option>
-                </select>
+                <div className="relative">
+                  <select required name="product" className="w-full bg-white border border-stone-100 px-6 py-4.5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-100/50 focus:border-rose-300 transition-all text-stone-700 font-medium appearance-none shadow-sm cursor-pointer">
+                    <option value="">Select a product</option>
+                    <option value="Beetroot Lip Balm">Beetroot Lip Balm</option>
+                    <option value="Herbal Hair Oil">Herbal Hair Oil</option>
+                    <option value="Softening Foot Cream">Softening Foot Cream</option>
+                    <option value="Other / General Consultation">Other / General Consultation</option>
+                  </select>
+                  <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
+                </div>
               </div>
             </div>
             
@@ -924,9 +969,95 @@ function ConsultationView({ setView }: { setView: (view: 'home' | 'products' | '
           </form>
         </div>
       </div>
+    </div>
+  );
+}
+
+function ConsultationView({ setView }: { setView: (view: 'home' | 'products' | 'consultation') => void }) {
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const name = formData.get('name');
+    const product = formData.get('product');
+    const userMessage = formData.get('message');
+    
+    let message = `Hello Varna Naturals, I am ${name}. I am interested in ${product}.`;
+    if (userMessage) {
+      message += ` Additional details: ${userMessage}`;
+    }
+    message += ` I would like a consultation.`;
+    
+    const whatsappUrl = `https://wa.me/9345033110?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  return (
+    <div className="h-[calc(100vh-96px)] overflow-y-auto snap-y snap-mandatory scroll-smooth hide-scrollbar transition-all bg-[#fdfdfd]">
+      {isModalOpen && <ConsultationModal onClose={() => setIsModalOpen(false)} />}
+      
+      {/* Hero Sections Wrapper */}
+      <div className="h-full flex flex-col lg:flex-row snap-start">
+        {/* Skin Consultation Section */}
+        <div className="flex-1 relative group cursor-pointer overflow-hidden flex flex-col items-center justify-center p-12 text-center border-r border-stone-100">
+          <div className="absolute inset-0 bg-rose-50/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+          
+          {/* Decorative background image - blurred -> Clear on hover */}
+          <div className="absolute inset-0 z-0 transition-all duration-1000 grayscale group-hover:grayscale-0 opacity-5 group-hover:opacity-20 group-hover:scale-110">
+            <img src="/assets/images/skinCare.png" className="w-full h-full object-cover" alt="Skin Care Background" />
+          </div>
+
+          <div className="relative z-10 space-y-6">
+            <div className="w-24 h-24 bg-white rounded-full mx-auto shadow-2xl shadow-rose-200/50 overflow-hidden mb-8 border-4 border-white group-hover:scale-110 transition-transform duration-500">
+               <img src="/assets/images/doctor1.png" className="w-full h-full object-cover" alt="Doctor 1" />
+            </div>
+            <h2 className="text-4xl lg:text-5xl font-serif font-bold text-[#333333]">Skin Consultation</h2>
+            <p className="text-stone-500 max-w-sm mx-auto font-medium leading-relaxed">
+              Personalized analysis of your skin concerns including acne, aging, and hydration needs.
+            </p>
+            <a 
+              href="https://wa.me/9345033110?text=Hello%20Varna%20Naturals,%20I%20would%20like%20to%20book%20a%20Skin%20Consultation" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-block bg-[#ff808b] text-white px-10 py-5 rounded-2xl font-bold tracking-wide hover:bg-[#ff6b78] hover:scale-105 transition-all shadow-xl shadow-rose-400/20 active:scale-95"
+            >
+              BOOK VIA WHATSAPP
+            </a>
+          </div>
+        </div>
+
+        {/* Hair Consultation Section */}
+        <div className="flex-1 relative group cursor-pointer overflow-hidden flex flex-col items-center justify-center p-12 text-center">
+          <div className="absolute inset-0 bg-stone-50/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+
+          {/* Decorative background image - blurred -> Clear on hover */}
+          <div className="absolute inset-0 z-0 transition-all duration-1000 grayscale group-hover:grayscale-0 opacity-5 group-hover:opacity-20 group-hover:scale-110">
+            <img src="/assets/images/hairCare.png" className="w-full h-full object-cover" alt="Hair Care Background" />
+          </div>
+
+          <div className="relative z-10 space-y-6">
+            <div className="w-24 h-24 bg-white rounded-full mx-auto shadow-2xl shadow-stone-200/50 overflow-hidden mb-8 border-4 border-white group-hover:scale-110 transition-transform duration-500">
+               <img src="/assets/images/doctor2.png" className="w-full h-full object-cover" alt="Doctor 2" />
+            </div>
+            <h2 className="text-4xl lg:text-5xl font-serif font-bold text-[#333333]">Hair Consultation</h2>
+            <p className="text-stone-500 max-w-sm mx-auto font-medium leading-relaxed">
+              Expert guidance for hair fall, scalp health, and choosing the right natural oil blend.
+            </p>
+            <a 
+              href="https://wa.me/9345033110?text=Hello%20Varna%20Naturals,%20I%20would%20like%20to%20book%20a%20Hair%20Consultation" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-block bg-[#333333] text-white px-10 py-5 rounded-2xl font-bold tracking-wide hover:bg-black hover:scale-105 transition-all shadow-xl shadow-stone-400/20 active:scale-95"
+            >
+              BOOK VIA WHATSAPP
+            </a>
+          </div>
+        </div>
+      </div>
 
       <div className="snap-start">
-        <Footer setView={setView} />
+        <Footer setView={setView} openConsultation={() => setIsModalOpen(true)} />
       </div>
     </div>
   );
