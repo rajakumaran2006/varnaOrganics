@@ -86,20 +86,6 @@ export default function App() {
                 secondaryText: "Brahmi and Amla extracts work together to strengthen hair follicles from within, promoting healthy growth."
               }}
             />
-
-            <ProductShowcase 
-              id="other"
-              productName="Personalized Wellness Plan"
-              title={<>Your Journey To<br />Complete Holistic<br />Natural Care</>}
-              description="Not sure which product is right for you? Our experts provide personalized consultations to understand your unique skin and hair profile before formulating a solution."
-              image="/assets/images/logo.png"
-              categories={["Consultation", "Expert Led", "Personalized"]}
-              rightContent={{
-                heading: "We believe in care that goes beyond the surface, addressing the root cause through natural and herbal wisdom.",
-                secondaryTitle: "Personalized Care",
-                secondaryText: "Schedule a one-on-one session with our wellness experts to receive a customized routine and product recommendations."
-              }}
-            />
             
             {/* Footer inside products scrollable area */}
             <div className="snap-start">
@@ -393,22 +379,22 @@ function PopularProducts({ onMoreDetails, openConsultation }: { onMoreDetails: (
   const products = [
     {
       name: 'LIB BALM',
-      image: '/p1.png',
+      image: '/assets/images/p1.png',
       id: 'lib-balm'
     },
     {
       name: 'FOOT CREAM',
-      image: '/p2.png',
+      image: '/assets/images/p2.png',
       id: 'foot-cream'
     },
     {
       name: 'HAIR OIL',
-      image: '/p3.png',
+      image: '/assets/images/p3.png',
       id: 'hair-oil'
     },
     {
       name: 'OTHER',
-      image: '/logo.png',
+      image: '/assets/images/logo.png',
       id: 'other'
     }
   ];
@@ -834,7 +820,7 @@ function ProductShowcase({ id, productName, title, description, image, categorie
             
             <div className="flex items-center gap-3">
               <div className="flex -space-x-1.5">
-                {["/doctor1.png", "/doctor2.png", "/doctor3.png"].map((src, i) => (
+                {["/assets/images/doctor1.png", "/assets/images/doctor2.png", "/assets/images/doctor3.png"].map((src, i) => (
                   <img 
                     key={i} 
                     src={src} 
